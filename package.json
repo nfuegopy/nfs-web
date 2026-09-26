@@ -1,0 +1,14 @@
+{
+  "name": "nfs-web",
+  "version": "1.0.0",
+  "description": "NFSU2 Web Account Portal",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start --workspaces --if-present"
+  }
+}
