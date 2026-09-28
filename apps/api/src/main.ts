@@ -21,6 +21,6 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(port, '127.0.0.1');
+  await app.listen(process.env.PORT || 3100, '127.0.0.1');
 }
 bootstrap();
