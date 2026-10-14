@@ -81,8 +81,11 @@ const handleRegister = async () => {
   
   try {
     const config = useRuntimeConfig();
-    const apiUrl = config.public.apiUrl || 'http://localhost:3100/api';
-    
+    const apiUrl = config.public.apiUrl;
+    if (!apiUrl) {
+      throw new Error('La web no tiene configurada la URL de la API');
+    }
+
     const response = await fetch(`${apiUrl}/accounts`, {
       method: 'POST',
       headers: {
@@ -95,10 +98,11 @@ const handleRegister = async () => {
       })
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => null);
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Error al crear la cuenta');
+    if (!response.ok || data?.success !== true) {
+      const message = Array.isArray(data?.message) ? data.message.join('. ') : data?.message;
+      throw new Error(message || `Error al crear la cuenta (HTTP ${response.status})`);
     }
 
     successMessage.value = 'Cuenta creada correctamente. ¡Enciende los motores, ya puedes conectarte!';

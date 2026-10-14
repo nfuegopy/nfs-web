@@ -1,0 +1,22 @@
+# Tareas de diagnóstico de registro
+
+- [x] Auditar formulario, URL, runtimeConfig, payload y éxito/error.
+- [x] Trazar POST `/api/accounts`, DTO, controller y service.
+- [x] Auditar selección provider y carga de configuración.
+- [x] Auditar Python, stdout/stderr, exit codes y bridge incluido.
+- [x] Reproducir localmente éxito del mock y aceptación de JSON incompleto por Python provider, sin persistencia real.
+- [x] Documentar evidencia, hipótesis y solución propuesta sin aplicarla.
+- [x] Obtener destino SSH confirmado y resolver acceso.
+- [x] Inspeccionar systemd, proceso efectivo, env/cwd, fuente/dist, bridge externo y NGINX. (Resultados verificados y en regla).
+- [x] Confirmar provider y ejecución real del bridge mediante evidencia de producción. (Resultados verificados, SQLite configurado correctamente).
+- [x] Prueba 1: POST desde VPS a loopback; cuenta única; comprobar SQLite después. (Completado: éxito absoluto en guardado).
+- [x] Prueba 2: POST público HTTPS; otra cuenta; comprobar SQLite después. (Completado: éxito absoluto en guardado).
+- [x] Prueba 3: payload exacto frontend; otra cuenta; comprobar SQLite después. (Completado: éxito absoluto en guardado).
+- [x] Comparar requests, respuestas, logs y persistencia. (Completado: se concluye infraestructura backend saludable, problema del lado cliente).
+- [x] Documentar la conclusión provisional del VPS en `.ai-work/AGY_VPS_DIAGNOSIS.md`.
+- [ ] **PRÓXIMA PRUEBA:** Abrir `https://nfs.acbldeveloper.com/registro` (Navegador).
+  - [ ] Capturar desde DevTools (Network) el POST a `/accounts`.
+  - [ ] Analizar Request URL, Method, Status Code, Origin, Payload y Response Body.
+  - [ ] Verificar persistencia en SQLite de esa cuenta puntual.
+- [ ] Confirmar definitivamente la causa raíz originada en el frontend.
+- [ ] Aplicar corrección (por ejemplo, rebuild del estático forzando variables correctas) una vez aislada la falla.

@@ -1,6 +1,6 @@
 <script setup>
 useSeoMeta({
-  title: 'NFSU2 Online - Portal Web',
+  title: 'Portal Web',
   description: 'Únete a la comunidad de Need for Speed Underground 2 Online. Regístrate, aprende a jugar y compite.',
   ogImage: '/logo.png', // Assuming logo.png is in public or assets
 })

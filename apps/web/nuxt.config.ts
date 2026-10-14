@@ -8,5 +8,10 @@ export default defineNuxtConfig({
     }
   },
 
+  site: {
+    url: 'https://nfs.acbldeveloper.com',
+    name: 'NFSU2 Online',
+  },
+
   modules: ['@nuxtjs/seo', '@nuxt/ui']
 })
