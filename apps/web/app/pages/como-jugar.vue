@@ -94,11 +94,13 @@ const GAME_DIR = 'C:\\Program Files (x86)\\Need for Speed Underground 2'
       </li>
 
       <li class="card">
-        <h3>Partida con autos <span class="tag">opcional</span></h3>
+        <h3>Partida con todo desbloqueado <span class="tag">opcional</span></h3>
         <p>
-          Si no querés empezar la carrera de cero, en la carpeta de descargas vas a encontrar una partida guardada con autos
-          desbloqueados.
+          Para que nadie tenga que jugar todo el modo historia antes de correr online, compartimos una partida guardada con
+          <strong>todos los autos y piezas desbloqueados</strong>. No es la partida original del juego: es una partida avanzada que
+          preparamos nosotros y que cualquiera puede descargar, así que todos tienen acceso a los mismos autos.
         </p>
+        <p class="muted">Si preferís desbloquear todo jugando, saltá este paso: no es necesario para entrar al servidor.</p>
         <p>
           Extraela dentro de <code>%LOCALAPPDATA%\NFS Underground 2</code> (o la carpeta de partidas que encontraste en el paso 4).
           <strong>Reemplaza tu partida actual</strong>: por eso la copia de seguridad es importante.
