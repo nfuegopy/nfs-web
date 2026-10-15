@@ -49,6 +49,12 @@ npm run build --workspace api
 
 echo "==> Reinicio"
 systemctl restart nfs-api
-sleep 3
-systemctl --no-pager --lines=5 status nfs-api || true
-curl -fsS http://127.0.0.1:3100/api/health && echo && echo "==> Listo"
+for _ in $(seq 1 20); do
+  if curl -fsS http://127.0.0.1:3100/api/health >/dev/null 2>&1; then
+    echo "==> Listo: la API responde"
+    exit 0
+  fi
+  sleep 1
+done
+echo "!! La API no respondió en 20 segundos. Revisá: journalctl -u nfs-api -n 50" >&2
+exit 1
