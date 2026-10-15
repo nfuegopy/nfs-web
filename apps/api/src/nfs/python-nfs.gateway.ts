@@ -60,6 +60,19 @@ export class PythonNfsGateway implements NfsGateway {
     return account;
   }
 
+  async changePassword(username: string, currentPassword: string, newPassword: string) {
+    await this.run('changePassword', { username, currentPassword, newPassword });
+  }
+
+  async passwordResetTarget(email: string) {
+    const { account } = await this.run<{ account: { username: string; fingerprint: string } | null }>('passwordResetTarget', { email });
+    return account;
+  }
+
+  async resetPassword(username: string, fingerprint: string, newPassword: string) {
+    await this.run('resetPassword', { username, fingerprint, newPassword });
+  }
+
   getProfile(username: string) {
     return this.run('getProfile', { username });
   }

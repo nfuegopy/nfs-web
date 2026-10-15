@@ -45,6 +45,7 @@ async function submit() {
       <div class="field">
         <label for="password">Contraseña</label>
         <PasswordInput id="password" v-model="form.password" autocomplete="current-password" />
+        <NuxtLink to="/olvide" class="forgot">¿Olvidaste tu contraseña?</NuxtLink>
       </div>
 
       <p v-if="error" class="alert alert-error" role="alert">{{ error }}</p>
@@ -65,6 +66,11 @@ async function submit() {
 
 .intro {
   margin-bottom: 1.5rem;
+}
+
+.forgot {
+  justify-self: end;
+  font-size: 0.85rem;
 }
 
 .switch {

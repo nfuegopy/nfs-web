@@ -163,6 +163,11 @@ function lapTime(ms: number) {
         </section>
       </template>
 
+      <section class="block">
+        <h2>Seguridad</h2>
+        <ChangePasswordForm />
+      </section>
+
       <section v-if="profile.personas.length > 1" class="block">
         <h2>Tus pilotos</h2>
         <div class="personas">

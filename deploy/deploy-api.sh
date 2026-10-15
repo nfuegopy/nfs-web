@@ -33,6 +33,13 @@ set_env NFS_PROVIDER python
 set_env NFS_BRIDGE_PATH "$BRIDGE"
 set_env FRONTEND_URL https://nfs.acbldeveloper.com
 set_env COOKIE_SECURE true
+set_env SMTP_HOST smtp.hostinger.com
+set_env SMTP_PORT 465
+set_env SMTP_USER contacto@acbldeveloper.com
+set_env MAIL_FROM '"NFSU2 Online <contacto@acbldeveloper.com>"'
+if ! grep -qE '^SMTP_PASS=.+' "$ENV_FILE"; then
+  echo "    Aviso: falta SMTP_PASS en $ENV_FILE (la recuperación por email queda desactivada)"
+fi
 if ! grep -qE '^SESSION_SECRET=.{32,}' "$ENV_FILE"; then
   set_env SESSION_SECRET "$(openssl rand -hex 32)"
   echo "    SESSION_SECRET generado"
