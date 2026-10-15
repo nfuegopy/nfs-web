@@ -12,7 +12,10 @@ export interface Session {
   exp: number;
 }
 
-/** Sesión firmada (HMAC-SHA256) en una cookie httpOnly; no guarda contraseñas ni datos sensibles. */
+/**
+ * Tokens firmados con HMAC-SHA256. Se usan para la cookie de sesión (httpOnly) y para los enlaces
+ * de recuperación de contraseña. Cada token lleva un "propósito" para que no se puedan intercambiar.
+ */
 @Injectable()
 export class SessionService {
   private readonly secret: string;
@@ -32,10 +35,32 @@ export class SessionService {
     return createHmac('sha256', this.secret).update(value).digest('base64url');
   }
 
+  createToken(purpose: string, data: Record<string, unknown>, ttlSeconds: number) {
+    const body = Buffer.from(JSON.stringify({ ...data, purpose, exp: Math.floor(Date.now() / 1000) + ttlSeconds })).toString('base64url');
+    return `${body}.${this.sign(body)}`;
+  }
+
+  verifyToken<T>(purpose: string, token: unknown): (T & { exp: number }) | null {
+    if (typeof token !== 'string' || token.length > 2048) return null;
+    const [body, signature, extra] = token.split('.');
+    if (!body || !signature || extra !== undefined) return null;
+
+    const expected = Buffer.from(this.sign(body));
+    const given = Buffer.from(signature);
+    if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null;
+
+    try {
+      const data = JSON.parse(Buffer.from(body, 'base64url').toString());
+      if (data.purpose !== purpose || typeof data.exp !== 'number' || data.exp <= Date.now() / 1000) return null;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
   issue(res: Response, account: { username: string; persona: string }) {
-    const payload: Session = { ...account, exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS };
-    const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
-    res.cookie(SESSION_COOKIE, `${body}.${this.sign(body)}`, {
+    const token = this.createToken('session', { username: account.username, persona: account.persona }, SESSION_TTL_SECONDS);
+    res.cookie(SESSION_COOKIE, token, {
       httpOnly: true,
       secure: this.secure,
       sameSite: 'lax',
@@ -49,28 +74,20 @@ export class SessionService {
   }
 
   read(req: Request): Session | null {
-    const raw = readCookie(req.headers.cookie, SESSION_COOKIE);
-    if (!raw) return null;
-    const [body, signature] = raw.split('.');
-    if (!body || !signature) return null;
-
-    const expected = Buffer.from(this.sign(body));
-    const given = Buffer.from(signature);
-    if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null;
-
-    try {
-      const session = JSON.parse(Buffer.from(body, 'base64url').toString()) as Session;
-      return session.exp > Date.now() / 1000 ? session : null;
-    } catch {
-      return null;
-    }
+    return this.verifyToken<Session>('session', readCookie(req.headers.cookie, SESSION_COOKIE));
   }
 }
 
 function readCookie(header: string | undefined, name: string): string | null {
   for (const part of header?.split(';') ?? []) {
     const [key, ...value] = part.trim().split('=');
-    if (key === name) return decodeURIComponent(value.join('='));
+    if (key === name) {
+      try {
+        return decodeURIComponent(value.join('='));
+      } catch {
+        return null;
+      }
+    }
   }
   return null;
 }

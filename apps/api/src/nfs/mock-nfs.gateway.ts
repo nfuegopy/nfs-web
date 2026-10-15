@@ -40,6 +40,27 @@ export class MockNfsGateway implements NfsGateway {
     return Promise.resolve({ username: account.username, persona: account.persona });
   }
 
+  changePassword(username: string, currentPassword: string, newPassword: string) {
+    const account = this.accounts.get(username.toLowerCase());
+    if (!account || account.passwordHash !== hash(currentPassword))
+      throw new NfsError('WRONG_PASSWORD', 'La contraseña actual no es correcta');
+    account.passwordHash = hash(newPassword);
+    return Promise.resolve();
+  }
+
+  passwordResetTarget(email: string) {
+    const account = [...this.accounts.values()].find((a) => a.email.toLowerCase() === email.toLowerCase());
+    return Promise.resolve(account ? { username: account.username, fingerprint: account.passwordHash.slice(0, 32) } : null);
+  }
+
+  resetPassword(username: string, fingerprint: string, newPassword: string) {
+    const account = this.accounts.get(username.toLowerCase());
+    if (!account || account.passwordHash.slice(0, 32) !== fingerprint)
+      throw new NfsError('INVALID_RESET_TOKEN', 'El enlace ya se usó o venció. Pedí uno nuevo');
+    account.passwordHash = hash(newPassword);
+    return Promise.resolve();
+  }
+
   getProfile(username: string) {
     const account = this.accounts.get(username.toLowerCase());
     if (!account) throw new NfsError('ACCOUNT_NOT_FOUND', 'La cuenta no existe');

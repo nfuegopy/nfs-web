@@ -33,6 +33,13 @@ set_env NFS_PROVIDER python
 set_env NFS_BRIDGE_PATH "$BRIDGE"
 set_env FRONTEND_URL https://nfs.acbldeveloper.com
 set_env COOKIE_SECURE true
+set_env SMTP_HOST smtp.hostinger.com
+set_env SMTP_PORT 465
+set_env SMTP_USER contacto@acbldeveloper.com
+set_env MAIL_FROM '"NFSU2 Online <contacto@acbldeveloper.com>"'
+if ! grep -qE '^SMTP_PASS=.+' "$ENV_FILE"; then
+  echo "    Aviso: falta SMTP_PASS en $ENV_FILE (la recuperación por email queda desactivada)"
+fi
 if ! grep -qE '^SESSION_SECRET=.{32,}' "$ENV_FILE"; then
   set_env SESSION_SECRET "$(openssl rand -hex 32)"
   echo "    SESSION_SECRET generado"
@@ -49,6 +56,12 @@ npm run build --workspace api
 
 echo "==> Reinicio"
 systemctl restart nfs-api
-sleep 3
-systemctl --no-pager --lines=5 status nfs-api || true
-curl -fsS http://127.0.0.1:3100/api/health && echo && echo "==> Listo"
+for _ in $(seq 1 20); do
+  if curl -fsS http://127.0.0.1:3100/api/health >/dev/null 2>&1; then
+    echo "==> Listo: la API responde"
+    exit 0
+  fi
+  sleep 1
+done
+echo "!! La API no respondió en 20 segundos. Revisá: journalctl -u nfs-api -n 50" >&2
+exit 1

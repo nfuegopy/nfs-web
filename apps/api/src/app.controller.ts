@@ -1,4 +1,4 @@
-import { Controller, DefaultValuePipe, Get, Inject, ParseIntPipe, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Inject, Query } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 import { NFS_GATEWAY, type NfsGateway } from './nfs/nfs-gateway';
 
@@ -19,10 +19,11 @@ export class AppController {
   }
 
   @Get('leaderboard')
-  leaderboard(
-    @Query('game', new DefaultValuePipe('underground2')) game: string,
-    @Query('category', new DefaultValuePipe(0), ParseIntPipe) category: number,
-  ) {
-    return this.nfs.leaderboard(game.slice(0, 32), category);
+  leaderboard(@Query('game') game = 'underground2', @Query('category') category = '0') {
+    // Sólo valores exactos conocidos: cualquier otra cosa se rechaza antes de llegar al servidor del juego.
+    if (game !== 'underground2' || typeof category !== 'string' || !/^[0-5]$/.test(category)) {
+      throw new BadRequestException({ code: 'VALIDATION_ERROR', message: 'Parámetros de ranking inválidos' });
+    }
+    return this.nfs.leaderboard(game, Number(category));
   }
 }

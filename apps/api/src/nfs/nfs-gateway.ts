@@ -10,6 +10,9 @@ export interface AccountSummary {
 export interface NfsGateway {
   createAccount(data: { username: string; persona: string; email: string; password: string }): Promise<AccountSummary>;
   authenticate(username: string, password: string): Promise<AccountSummary>;
+  changePassword(username: string, currentPassword: string, newPassword: string): Promise<void>;
+  passwordResetTarget(email: string): Promise<{ username: string; fingerprint: string } | null>;
+  resetPassword(username: string, fingerprint: string, newPassword: string): Promise<void>;
   getProfile(username: string): Promise<unknown>;
   leaderboard(game: string, category: number): Promise<unknown>;
   summary(): Promise<{ players: number; online: number; races: number }>;
@@ -26,6 +29,9 @@ const STATUS_BY_CODE: Record<string, HttpStatus> = {
   INVALID_EMAIL: HttpStatus.BAD_REQUEST,
   VALIDATION_ERROR: HttpStatus.BAD_REQUEST,
   INVALID_CREDENTIALS: HttpStatus.UNAUTHORIZED,
+  WRONG_PASSWORD: HttpStatus.BAD_REQUEST,
+  INVALID_RESET_TOKEN: HttpStatus.BAD_REQUEST,
+  MAIL_DISABLED: HttpStatus.SERVICE_UNAVAILABLE,
   ACCOUNT_LOCKED: HttpStatus.TOO_MANY_REQUESTS,
   ACCOUNT_BANNED: HttpStatus.FORBIDDEN,
   ACCOUNT_DISABLED: HttpStatus.FORBIDDEN,
