@@ -102,7 +102,8 @@ const GAME_DIR = 'C:\\Program Files (x86)\\Need for Speed Underground 2'
         </p>
         <p class="muted">Si preferís desbloquear todo jugando, saltá este paso: no es necesario para entrar al servidor.</p>
         <p>
-          Con el juego cerrado, extraé el ZIP dentro de <code>%LOCALAPPDATA%\NFS Underground 2</code>. Tiene que quedar así:
+          Descargá <code>Nfuego.rar</code> de la carpeta de descargas. Con el juego cerrado, extraelo con 7-Zip o WinRAR dentro de
+          <code>%LOCALAPPDATA%\NFS Underground 2</code> (pegá esa ruta en la barra del Explorador para llegar). Tiene que quedar así:
         </p>
         <p><code class="path">%LOCALAPPDATA%\NFS Underground 2\Nfuego</code></p>
         <p>
