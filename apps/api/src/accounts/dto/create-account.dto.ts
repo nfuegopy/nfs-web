@@ -1,25 +1,29 @@
-import { IsString, MinLength, MaxLength, Matches } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsEmail, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+
+const trim = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
 
 export class CreateAccountDto {
+  @Transform(trim)
   @IsString()
-  @MinLength(3)
-  @MaxLength(20)
-  @Matches(/^[a-zA-Z0-9_-]+$/, {
-    message: 'Username must contain only letters, numbers, underscores and dashes',
-  })
+  @MinLength(3, { message: 'El usuario debe tener al menos 3 caracteres' })
+  @MaxLength(20, { message: 'El usuario puede tener hasta 20 caracteres' })
+  @Matches(/^[a-zA-Z0-9_-]+$/, { message: 'El usuario sólo puede tener letras, números, guiones y guiones bajos' })
   username: string;
 
+  @Transform(trim)
   @IsString()
-  @MinLength(3)
-  @MaxLength(20)
+  @MinLength(3, { message: 'El nombre de piloto debe tener al menos 3 caracteres' })
+  @MaxLength(20, { message: 'El nombre de piloto puede tener hasta 20 caracteres' })
   persona: string;
 
-  @IsString()
-  @MinLength(8)
-  @MaxLength(64)
-  password: string;
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
+  @IsEmail({}, { message: 'Ingresá un email válido' })
+  @MaxLength(254)
+  email: string;
 
-  // Turnstile not implemented yet, but keeping field as per readme-1
-  // @IsString()
-  // turnstileToken: string;
+  @IsString()
+  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
+  @MaxLength(64, { message: 'La contraseña puede tener hasta 64 caracteres' })
+  password: string;
 }

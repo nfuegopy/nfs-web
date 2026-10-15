@@ -1,50 +1,23 @@
-import { Controller, Post, Body, BadRequestException, Inject } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import type { Response } from 'express';
+import { SessionService } from '../auth/session.service';
+import { NFS_GATEWAY, type NfsGateway } from '../nfs/nfs-gateway';
 import { CreateAccountDto } from './dto/create-account.dto';
-import type { NfsAccountProvider } from '../nfs/nfs-account.provider';
 
 @Controller('accounts')
 export class AccountsController {
   constructor(
-    @Inject('NfsAccountProvider')
-    private readonly nfsProvider: NfsAccountProvider,
+    @Inject(NFS_GATEWAY) private readonly nfs: NfsGateway,
+    private readonly sessions: SessionService,
   ) {}
 
+  /** Crea la cuenta en el servidor del juego y deja la sesión web iniciada. */
   @Post()
-  async create(@Body() createAccountDto: CreateAccountDto) {
-    if (createAccountDto.password !== createAccountDto.password) {
-      // In the real UI, they confirm the password, but the DTO only needs the final one.
-      // Wait, the UI sends both, but we should probably ignore the confirm password at the DTO level 
-      // or check it in the frontend. If it comes, we check it here. Let's assume frontend checks it 
-      // or it is checked via custom class validator. For now, we trust the single password field.
-    }
-
-    try {
-      const accountExists = await this.nfsProvider.accountExists(createAccountDto.username);
-      if (accountExists) {
-        throw new BadRequestException('El nombre de usuario ya está en uso');
-      }
-
-      const personaExists = await this.nfsProvider.personaExists(createAccountDto.persona);
-      if (personaExists) {
-        throw new BadRequestException('El nombre de jugador ya está en uso');
-      }
-
-      await this.nfsProvider.createAccount({
-        username: createAccountDto.username,
-        persona: createAccountDto.persona,
-        password: createAccountDto.password,
-      });
-
-      return {
-        success: true,
-        message: 'Cuenta creada correctamente',
-        account: {
-          username: createAccountDto.username,
-          persona: createAccountDto.persona,
-        },
-      };
-    } catch (error) {
-      throw new BadRequestException(error.message || 'Error al crear la cuenta');
-    }
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  async create(@Body() dto: CreateAccountDto, @Res({ passthrough: true }) res: Response) {
+    const account = await this.nfs.createAccount(dto);
+    this.sessions.issue(res, account);
+    return { success: true, message: 'Cuenta creada correctamente', account };
   }
 }
