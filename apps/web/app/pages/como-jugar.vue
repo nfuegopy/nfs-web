@@ -102,8 +102,13 @@ const GAME_DIR = 'C:\\Program Files (x86)\\Need for Speed Underground 2'
         </p>
         <p class="muted">Si preferís desbloquear todo jugando, saltá este paso: no es necesario para entrar al servidor.</p>
         <p>
-          Extraela dentro de <code>%LOCALAPPDATA%\NFS Underground 2</code> (o la carpeta de partidas que encontraste en el paso 4).
-          <strong>Reemplaza tu partida actual</strong>: por eso la copia de seguridad es importante.
+          Con el juego cerrado, extraé el ZIP dentro de <code>%LOCALAPPDATA%\NFS Underground 2</code>. Tiene que quedar así:
+        </p>
+        <p><code class="path">%LOCALAPPDATA%\NFS Underground 2\Nfuego</code></p>
+        <p>
+          Cada perfil del juego es una carpeta, así que tu partida no se pierde: al abrir el juego vas a ver
+          <strong>Nfuego</strong> como un perfil más y lo elegís cuando quieras correr con todo desbloqueado. Si ya tenés un perfil
+          con ese mismo nombre, se reemplaza; por eso conviene hacer antes la copia de seguridad del paso 4.
         </p>
       </li>
 
